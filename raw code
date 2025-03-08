@@ -197,7 +197,7 @@ class LSTM():
 
 
 
-    def fit(self,x,y,epochs,learning_rate):
+    def fit(self,x,y,epochs,learning_rate,optimizer_type='adam'):
       self.x=x
       for epoch in range(epochs):
         batch_size=x.shape[0]
@@ -216,7 +216,8 @@ class LSTM():
         for layer in range(self.layercountdense):
             denseinput=self.forwardpropagationdense(denseinput,layer)
         delta=self.lossderivative(y,denseinput)
-        for layer in range(self.layercountdense):
+
+        for layer in range(self.layercountdense-1,-1,-1):
           dw, db, delta = self.backpropagationdense(delta, layer, learning_rate, optimizer_type)
           self.weightsdense[layer], self.biasdense[layer] = self.optimizers['dense'][layer].optimizer(
                     optimizer_type,
@@ -224,7 +225,7 @@ class LSTM():
                     self.biasdense[layer], db,
                     learning_rate
                 )
-        for layer in range(self.layercountlstm):
+        for layer in range(self.layercountlstm-1,-1,-1):
           dwf_sum = np.zeros_like(self.forgetweight[layer])
           dwi_sum = np.zeros_like(self.inputweight[layer])
           dwc_sum = np.zeros_like(self.cellweight[layer])
@@ -232,9 +233,10 @@ class LSTM():
           for timestep in range(x.shape[1]-1,-1,-1):
              if timestep==x.shape[1]-1:
                dhidden=delta
-               dcell=dhidden*self.outputgate[timestep,layer]*(1-np.tanh(self.ct[timestep,layer])**2)
+               dcell=dhidden*self.ot[timestep,layer]*(1-np.tanh(self.ct[timestep,layer])**2)
              else:
-               dcell=dcell*self.forgetgate[timestep+1,layer]
+               dhidden=delta
+               dcell=dcell*self.ft[timestep+1,layer]
                fo=np.tanh(self.ct[timestep+1,layer])*self.activationderivative(self.ot[timestep+1,layer].'sigmoid')
                fo=np.dot(fg,self.hidden_outputweight[layer].T)
                ff=self.ot[timestep+1,layer]*self.activationderivative(self.ct[timestep+1,layer],'tanh')*self.ct[timestep,layer]*self.activationderivative(self.ft[timestep+1],'sigmoid')
