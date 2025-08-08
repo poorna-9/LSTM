@@ -1,4 +1,4 @@
-# 🔁 NeuroLite-LSTM
+# NeuroLite-LSTM
 
 A minimal, transparent, and fully-customizable Long Short-Term Memory (LSTM) network framework built entirely from scratch using **NumPy**. Designed for deep learning enthusiasts and learners who want to understand how LSTMs work at the cell and gate level.
 
